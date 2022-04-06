@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StatusBar,
   FlatList,
@@ -17,7 +17,7 @@ const { width, height } = Dimensions.get("screen");
 
 const API_KEY = "userApi";
 const API_URL =
-  "https://api.pexels.com/v1/search?query=berlins&orientation=portrait&size=small&per_page=20";
+  "https://api.pexels.com/v1/search?query=nature&orientation=portrait&size=small&per_page=20";
 
 const fetchImages = async () => {
   const data = await fetch(API_URL, {
@@ -25,22 +25,42 @@ const fetchImages = async () => {
       Authorization: API_KEY
     }
   });
-  const dataResults = await data.json();
-  return dataResults;
+  const { photos } = await data.json();
+  return photos;
 };
 
 export default function App() {
+  const [images, setImages] = React.useState(null);
   React.useEffect(() => {
     const fetchImageData = async () => {
       const images = await fetchImages();
-      console.log(images);
+      // console.log(imagesArray);
+      setImages(images);
     };
     fetchImageData();
   }, []);
+
+  if (!images) {
+    return <Text>Comming up...</Text>;
+  }
   return (
     <div className="App">
-      <h1>Hello CodeSandbox</h1>
-      <h2>Start editing to see some magic happen!</h2>
+      <View>
+        <FlatList
+          data={images}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => {
+            return (
+              <View style={{ width, height }}>
+                <Image
+                  src={{ uri: item.src.portrait }}
+                  style={[StyleSheet.absoluteFillObject]}
+                />
+              </View>
+            );
+          }}
+        />
+      </View>
     </div>
   );
 }
