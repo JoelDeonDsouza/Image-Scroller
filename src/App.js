@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  StatusBar,
   FlatList,
   Image,
-  Animated,
   Text,
   View,
   Dimensions,
   StyleSheet,
-  TouchableOpacity,
-  Easing,
-  SafeAreaViewBase,
-  SafeAreaView,
-  ScrollView
+  TouchableOpacity
 } from "react-native";
 const { width, height } = Dimensions.get("screen");
 
