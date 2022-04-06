@@ -11,13 +11,17 @@ import {
   TouchableOpacity,
   Easing,
   SafeAreaViewBase,
-  SafeAreaView
+  SafeAreaView,
+  ScrollView
 } from "react-native";
 const { width, height } = Dimensions.get("screen");
 
 const API_KEY = "userApi";
 const API_URL =
   "https://api.pexels.com/v1/search?query=nature&orientation=portrait&size=small&per_page=20";
+
+const IMAGE_SIZE = 80;
+const SPACING = 10;
 
 const fetchImages = async () => {
   const data = await fetch(API_URL, {
@@ -49,6 +53,9 @@ export default function App() {
         <FlatList
           data={images}
           keyExtractor={(item) => item.id.toString()}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => {
             return (
               <View style={{ width, height }}>
@@ -57,6 +64,26 @@ export default function App() {
                   style={[StyleSheet.absoluteFillObject]}
                 />
               </View>
+            );
+          }}
+        />
+        <FlatList
+          data={images}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ position: "absolute", bottom: IMAGE_SIZE }}
+          renderItem={({ item }) => {
+            return (
+              <Image
+                src={{ uri: item.src.portrait }}
+                style={{
+                  width: IMAGE_SIZE,
+                  height: IMAGE_SIZE,
+                  borderRadius: 12,
+                  marginRight: SPACING
+                }}
+              />
             );
           }}
         />
