@@ -44,18 +44,47 @@ export default function App() {
     fetchImageData();
   }, []);
 
+  const topRef = React.useRef();
+  const bottomRef = React.useRef();
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const scrollToActiveIndex = (index) => {
+    setActiveIndex(index);
+    topRef?.current?.scrollToOffset({
+      offset: index * width,
+      animated: true
+    });
+    if (index * (IMAGE_SIZE + SPACING) - IMAGE_SIZE / 2 > width / 2) {
+      bottomRef?.current?.scrollToOffset({
+        offset: index * (IMAGE_SIZE + SPACING) - width / 2 + IMAGE_SIZE / 2,
+        animated: true
+      });
+    } else {
+      bottomRef?.current?.scrollToOffset({
+        offset: 0,
+        animated: true
+      });
+    }
+  };
+
   if (!images) {
     return <Text>Comming up...</Text>;
   }
+
   return (
     <div className="App">
       <View>
         <FlatList
+          ref={topRef}
           data={images}
           keyExtractor={(item) => item.id.toString()}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={(ev) => {
+            scrollToActiveIndex(
+              Math.floor(ev.nativeEvent.contentOffset.x / width)
+            );
+          }}
           renderItem={({ item }) => {
             return (
               <View style={{ width, height }}>
@@ -68,22 +97,28 @@ export default function App() {
           }}
         />
         <FlatList
+          ref={bottomRef}
           data={images}
           keyExtractor={(item) => item.id.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{ position: "absolute", bottom: IMAGE_SIZE }}
-          renderItem={({ item }) => {
+          contentContainerStyle={{ paddingHorizontal: SPACING }}
+          renderItem={({ item, index }) => {
             return (
-              <Image
-                src={{ uri: item.src.portrait }}
-                style={{
-                  width: IMAGE_SIZE,
-                  height: IMAGE_SIZE,
-                  borderRadius: 12,
-                  marginRight: SPACING
-                }}
-              />
+              <TouchableOpacity onPress={() => scrollToActiveIndex(index)}>
+                <Image
+                  src={{ uri: item.src.portrait }}
+                  style={{
+                    width: IMAGE_SIZE,
+                    height: IMAGE_SIZE,
+                    borderRadius: 12,
+                    marginRight: SPACING,
+                    borderWidth: 2,
+                    borderColor: activeIndex === index ? "#000" : "transparent"
+                  }}
+                />
+              </TouchableOpacity>
             );
           }}
         />
