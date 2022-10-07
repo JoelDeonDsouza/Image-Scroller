@@ -2,7 +2,7 @@
 
 ## Tech Stack
 
-**Client:** React native/React.
+**Client:** React native/React(JavaScript).
 
 ## Deployment
 
